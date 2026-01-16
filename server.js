@@ -43,11 +43,24 @@ const handler = copilotRuntimeNodeHttpEndpoint({
   serviceAdapter,
 });
 
+// Add body parser middleware to read request body
+app.use(express.json());
+
 // Mount the CopilotKit handler
 // Express strips the /copilotkit prefix from req.url, but the handler needs the full path
 // So we restore req.url to the original path before calling the handler
 app.use('/copilotkit', async (req, res, next) => {
   try {
+    // Debug: log incoming requests to see if context is included
+    if (req.method === 'POST' && req.body) {
+      console.log('[Backend] Received request with body keys:', Object.keys(req.body));
+      if (req.body.context) {
+        console.log('[Backend] Context received:', JSON.stringify(req.body.context, null, 2));
+      } else {
+        console.log('[Backend] ⚠️ No context in request body!');
+      }
+    }
+    
     // Save Express's modified URL
     const expressModifiedUrl = req.url;
     // Restore the full path for Hono routing
