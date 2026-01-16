@@ -1,26 +1,33 @@
-import { useState } from 'react'
-import { useCopilotReadable } from '@copilotkit/react-core'
+import { useFrontendTool } from '@copilotkit/react-core'
 
-export function Counter() {
-  const [count, setCount] = useState(0)
+interface CounterProps {
+  count: number
+  onOpenForm: () => void
+}
 
-  // Make the count value readable by CopilotKit
-  useCopilotReadable({
-    description: 'The current count value in the counter',
-    value: count,
+export function Counter({ count, onOpenForm }: CounterProps) {
+  // Create a frontend tool that the AI can use to check the current incident count
+  // This ensures the AI always has access to the latest value
+  useFrontendTool({
+    name: 'getCurrentIncidentCount',
+    description: 'Get the current number of active incidents. Use this to check the latest count after any manual changes.',
+    parameters: [],
+    handler: async () => {
+      return `The current number of active incidents is ${count}.`
+    },
   })
 
   return (
     <div className="counter-container">
       <div className="counter-display">
         <div className="counter-value">{count}</div>
-        <div className="counter-label">Actions</div>
+        <div className="counter-label">Active Incidents</div>
       </div>
       <button 
         className="counter-button"
-        onClick={() => setCount((count) => count + 1)}
+        onClick={onOpenForm}
       >
-        Increment
+        Report Incident
       </button>
     </div>
   )
