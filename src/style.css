@@ -224,8 +224,12 @@ button {
 }
 
 .dashboard-header {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 3rem;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .section-title {
@@ -439,6 +443,16 @@ button {
   }
 
   .hero-actions button {
+    width: 100%;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .dashboard-header button {
     width: 100%;
   }
 
