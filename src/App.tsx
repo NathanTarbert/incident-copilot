@@ -60,16 +60,21 @@ function Counter() {
 }
 
 function App() {
+  const runtimeUrl = import.meta.env.VITE_COPILOTKIT_RUNTIME_URL
   const apiKey = import.meta.env.VITE_COPILOTKIT_PUBLIC_API_KEY
+  const showDevCosole = import.meta.env.VITE_COPILOTKIT_SHOW_DEV_CONSOLE
 
   return (
     <ErrorBoundary>
       <div id="app-content" style={{ minHeight: '100vh', position: 'relative' }}>
         <CopilotKit
+        runtimeUrl={runtimeUrl}
         headers={{
           "x-copilotkit-runtime-client-gql-version": "1.50.0"
         }}
-        publicApiKey={apiKey} > 
+        useSingleEndpoint={true}
+        publicApiKey={apiKey}
+        showDevConsole={showDevCosole}> 
           <div>
             <a href="https://vite.dev" target="_blank">
               <img src={viteLogo} className="logo" alt="Vite logo" />
