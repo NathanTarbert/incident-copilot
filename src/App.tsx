@@ -186,14 +186,21 @@ function AppContent() {
 }
 
 function App() {
+  // Environment-based configuration for flexible deployment
+  const runtimeUrl = import.meta.env.VITE_COPILOTKIT_RUNTIME_URL || "http://localhost:4000/copilotkit"
+  const publicApiKey = import.meta.env.VITE_COPILOTKIT_PUBLIC_API_KEY
+  const showDevConsole = import.meta.env.VITE_COPILOTKIT_SHOW_DEV_CONSOLE === 'true'
+
   return (
     <ErrorBoundary>
       <div id="app-content" style={{ minHeight: '100vh', position: 'relative' }}>
         <CopilotKit
+          runtimeUrl={runtimeUrl}
+          publicApiKey={publicApiKey}
+          showDevConsole={showDevConsole}
           headers={{
             "x-copilotkit-runtime-client-gql-version": "1.50.0"
           }}
-          runtimeUrl="http://localhost:4000/copilotkit"
         >
           <AppContent />
           <CopilotPopup
