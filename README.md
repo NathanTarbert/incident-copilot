@@ -1,4 +1,4 @@
-# TaskFlow - AI-Powered Productivity Platform
+# AI-Powered Incident Response Platform
 
 A modern SaaS application built with React, TypeScript, and CopilotKit that demonstrates how to integrate AI assistance into a web application. TaskFlow features a beautiful, responsive UI with real-time AI interaction capabilities.
 
