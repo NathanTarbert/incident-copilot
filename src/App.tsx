@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import './style.css'
 import { CopilotKit, useCopilotReadable } from '@copilotkit/react-core'
 import { CopilotSidebar } from '@copilotkit/react-ui'
@@ -7,23 +7,54 @@ import { Counter } from './components/Counter'
 import { CounterController } from './components/CounterController'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { IncidentForm } from './components/IncidentForm'
+import { IncidentsList } from './components/IncidentsList'
 import type { IncidentData } from './components/IncidentForm'
+import type { Incident, IncidentSeverity } from './types/incident'
+
+const severityMap: Record<IncidentData['severity'], IncidentSeverity> = {
+  critical: 'P0',
+  high: 'P1',
+  medium: 'P2',
+  low: 'P3',
+}
 
 function AppContent() {
-  const [count, setCount] = useState(0)
+  const [incidents, setIncidents] = useState<Incident[]>([])
   const [isIncidentFormOpen, setIsIncidentFormOpen] = useState(false)
 
-  // Share the incident count with the AI so it can answer questions like
-  // "how many active incidents are there?"
+  const activeCount = incidents.filter(i => i.status !== 'Resolved').length
+
+  // Share incident details with the AI
   useCopilotReadable({
-    description: "The current number of active incidents",
-    value: count,
+    description: "The current list of incidents with their status, severity, title, and description",
+    value: {
+      activeCount,
+      total: incidents.length,
+      incidents: incidents.map(i => ({
+        id: i.id,
+        title: i.title,
+        severity: i.severity,
+        status: i.status,
+        description: i.description,
+      })),
+    },
   })
 
-  const handleReportIncident = (incident: IncidentData) => {
-    setCount(count + 1)
-    console.log('New incident reported:', incident)
-  }
+  const handleReportIncident = useCallback((data: IncidentData) => {
+    const newIncident: Incident = {
+      id: crypto.randomUUID(),
+      title: data.title,
+      description: data.description,
+      severity: severityMap[data.severity],
+      status: 'Open',
+      affectedServices: [],
+      detectionSource: 'manual',
+      timestamps: { created: new Date().toISOString() },
+      owner: data.assignee,
+      timeline: [],
+    }
+    setIncidents(prev => [newIncident, ...prev])
+  }, [])
 
   return (
     <div id="app-content" style={{ minHeight: '100vh', position: 'relative' }}>
@@ -88,8 +119,8 @@ function AppContent() {
                   <span className="card-badge">Live</span>
                 </div>
                 <div className="card-content">
-                  <Counter count={count} onOpenForm={() => setIsIncidentFormOpen(true)} />
-                  <CounterController count={count} setCount={setCount} />
+                  <Counter count={activeCount} onOpenForm={() => setIsIncidentFormOpen(true)} />
+                  <CounterController incidents={incidents} setIncidents={setIncidents} />
                 </div>
                 <p className="card-description">
                   Currently open incidents requiring attention
@@ -122,6 +153,17 @@ function AppContent() {
                 <p className="card-description">
                   Successfully resolved incidents in the last 24 hours
                 </p>
+              </div>
+            </div>
+
+            {/* Reported Incidents */}
+            <div className="dashboard-card" style={{ gridColumn: '1 / -1' }}>
+              <div className="card-header">
+                <h3 className="card-title">Reported Incidents</h3>
+                <span className="card-badge">{activeCount} Active</span>
+              </div>
+              <div className="card-content">
+                <IncidentsList incidents={incidents} maxItems={10} />
               </div>
             </div>
           </section>
