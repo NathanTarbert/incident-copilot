@@ -10,7 +10,15 @@ interface ErrorBoundaryState {
   error: Error | null
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  declare context: unknown
+  declare setState: Component<ErrorBoundaryProps, ErrorBoundaryState>['setState']
+  declare forceUpdate: Component<ErrorBoundaryProps, ErrorBoundaryState>['forceUpdate']
+  declare props: Readonly<ErrorBoundaryProps>
+  declare state: Readonly<ErrorBoundaryState>
+  declare refs: Record<string, never>
+
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false, error: null }
