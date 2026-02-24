@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Modal } from './Modal'
 import './IncidentForm.css'
 
