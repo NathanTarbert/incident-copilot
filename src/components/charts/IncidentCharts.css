@@ -1,0 +1,148 @@
+.chart-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  background: var(--surface-elevated, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin: 0.5rem 0;
+}
+
+/* Recharts' ResponsiveContainer measures parent width — it needs an explicit
+   non-auto width on its wrapper. The inner div it injects already handles this,
+   but we ensure overflow stays clipped if labels exceed the container. */
+.chart-container .recharts-responsive-container {
+  width: 100% !important;
+}
+
+.chart-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.chart-container .recharts-wrapper {
+  font-size: 0.6875rem;
+}
+
+.chart-container .recharts-legend-wrapper {
+  font-size: 0.6875rem;
+}
+
+.chart-container .recharts-tooltip-wrapper {
+  font-size: 0.75rem;
+}
+
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  color: var(--text-secondary, #64748b);
+  font-size: 0.8125rem;
+}
+
+.chart-loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border, #e2e8f0);
+  border-top-color: var(--primary, #6366f1);
+  border-radius: 50%;
+  animation: chart-spin 0.6s linear infinite;
+}
+
+@keyframes chart-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Donut center label */
+.chart-center-num {
+  font-size: 1.5rem;
+  font-weight: 700;
+  fill: var(--text-primary, #0f172a);
+}
+
+.chart-center-label {
+  font-size: 0.625rem;
+  font-weight: 500;
+  fill: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Custom legend rows below the chart */
+.chart-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.6875rem;
+  color: var(--text-secondary, #64748b);
+  min-width: 0;
+}
+
+.chart-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chart-legend-name {
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  white-space: nowrap;
+}
+
+.chart-legend-sublabel {
+  font-weight: 400;
+  color: var(--text-secondary, #64748b);
+  margin-left: 0.15rem;
+}
+
+.chart-legend-meta {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Severity highlight tags below the legend */
+.chart-footnote {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.chart-footnote-tag {
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--surface, #f1f5f9);
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chart-footnote-tag.critical {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.chart-footnote-tag.muted {
+  opacity: 0.7;
+}
