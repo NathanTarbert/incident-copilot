@@ -95,40 +95,18 @@ incident-copilot/
 
 The backend port (`4000`) and the frontend's `runtimeUrl` are matched in `server.js` and `src/App.tsx` — change both if you need a different port.
 
-## Deploy to Render
+## Deploy
 
-Deploys as **one Node web service** that serves both the Vite build and the `/copilotkit` runtime on the same origin — no CORS, no second deploy pipeline. The free tier works (no credit card required).
+Deploys as a single Node service. In production `server.js` binds to `process.env.PORT`, serves the Vite build from `dist/`, and mounts the runtime at `/copilotkit` on the same origin — no CORS, no second service.
 
-1. Render dashboard → **New +** → **Web Service** → connect this GitHub repo → branch `main`.
-2. **Settings:**
-   - **Language:** Node
-   - **Build Command:**
-     ```
-     npx --yes pnpm@latest install --frozen-lockfile --config.dangerously-allow-all-builds=true && npx --yes pnpm@latest build
-     ```
-   - **Start Command:** `npx --yes pnpm@latest start`
-   - **Instance Type:** Free
-3. **Environment variables** (Advanced):
-   - `NODE_ENV` = `production`
-   - `VITE_COPILOTKIT_RUNTIME_URL` = `/copilotkit`
-   - `OPENAI_API_KEY` = *your key*
-4. **Create Web Service** — first build is ~3–5 minutes; live at `https://<your-service>.onrender.com`.
+- **Build:** `pnpm install --frozen-lockfile && pnpm build`
+- **Start:** `pnpm start`
+- **Env:** `NODE_ENV=production`, `OPENAI_API_KEY`, `VITE_COPILOTKIT_RUNTIME_URL=/copilotkit`
 
-Under the hood:
-- `pnpm build` produces `dist/`.
-- `pnpm start` (= `NODE_ENV=production node server.js`) binds to Render's `$PORT`, serves `dist/` as static, mounts `/copilotkit`, and falls back to `index.html` for client-side routes.
-- `VITE_COPILOTKIT_RUNTIME_URL=/copilotkit` makes the Vite build emit a same-origin runtime URL.
-
-Why `npx pnpm` instead of `npm install -g pnpm`: Render's `/usr/lib/node_modules` is read-only, so the `-g` install fails with EROFS. `npx` caches pnpm under the writable home dir, no globals needed.
-
-Why `--config.dangerously-allow-all-builds=true`: pnpm 11 requires explicit approval before running postinstall scripts for new packages (`@scarf/scarf`, `esbuild`) and exits non-zero with `ERR_PNPM_IGNORED_BUILDS` otherwise. The flag pre-approves them in CI where there's no human to prompt.
-
-Free-tier caveat: the service spins down after ~15 minutes of no traffic; the next request takes ~30s to wake it up.
-
-To run a production build locally:
+Run the production bundle locally to sanity-check:
 ```bash
 pnpm build
-OPENAI_API_KEY=sk-... pnpm start    # serves both at http://localhost:4000
+OPENAI_API_KEY=sk-... pnpm start    # http://localhost:4000
 ```
 
 ## Troubleshooting
