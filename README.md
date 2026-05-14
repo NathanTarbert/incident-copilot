@@ -93,6 +93,25 @@ incident-copilot/
 
 The backend port (`4000`) and the frontend's `runtimeUrl` are matched in `server.js` and `src/App.tsx` — change both if you need a different port.
 
+## Deploy to Render
+
+The repo includes a `render.yaml` blueprint that runs both the Vite build and the Express runtime as a single web service.
+
+1. Push the repo to GitHub (you already did).
+2. In Render: **New → Blueprint**, point at this repo. Render reads `render.yaml`, provisions a Node service, and asks you to paste your `OPENAI_API_KEY`.
+3. After the first build the app is live at `https://<service-name>.onrender.com`. The frontend talks to `/copilotkit` on the same origin — no extra config needed.
+
+Under the hood:
+- `pnpm build` produces `dist/`.
+- `pnpm start` (= `NODE_ENV=production node server.js`) binds to Render's `$PORT`, serves `dist/` as static, mounts `/copilotkit`, and falls back to `index.html` for client-side routes.
+- `VITE_COPILOTKIT_RUNTIME_URL=/copilotkit` is set in `render.yaml` so the Vite build emits a same-origin runtime URL.
+
+To run a production build locally:
+```bash
+pnpm build
+OPENAI_API_KEY=sk-... pnpm start    # serves both at http://localhost:4000
+```
+
 ## Troubleshooting
 
 - **`Agent 'default' not found`** — make sure `pnpm dev:server` is running and the `runtimeUrl` in `App.tsx` matches.

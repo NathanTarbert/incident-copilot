@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'node:path';
 import {
   CopilotRuntime,
   OpenAIAdapter,
@@ -12,8 +13,11 @@ import OpenAI from 'openai';
 dotenv.config();
 
 const app = express();
+const PORT = Number(process.env.PORT ?? 4000);
+const IS_PROD = process.env.NODE_ENV === 'production';
 
-// Enable CORS so the Vite dev server (port 5173) can reach this server (port 4000)
+// Enable CORS so the Vite dev server (port 5173) can reach this server (port 4000).
+// In production frontend and backend share the same origin so CORS is harmless.
 app.use(cors());
 app.use(express.json());
 
@@ -58,7 +62,20 @@ app.use('/copilotkit', async (req, res, next) => {
   }
 });
 
-app.listen(4000, () => {
-  console.log('CopilotKit runtime server running on http://localhost:4000');
-  console.log('Endpoint: http://localhost:4000/copilotkit');
+// In production this same process serves the built Vite frontend.
+// SPA fallback returns index.html for any non-API GET so client-side routing works.
+if (IS_PROD) {
+  const distDir = path.resolve('dist');
+  app.use(express.static(distDir));
+  app.get(/.*/, (_req, res) => {
+    res.sendFile(path.join(distDir, 'index.html'));
+  });
+}
+
+app.listen(PORT, () => {
+  console.log(
+    `CopilotKit runtime server running on http://localhost:${PORT}`,
+  );
+  console.log(`Endpoint: http://localhost:${PORT}/copilotkit`);
+  if (IS_PROD) console.log(`Serving frontend from ./dist`);
 });
