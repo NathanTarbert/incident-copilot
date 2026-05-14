@@ -102,7 +102,7 @@ Deploys as **one Node web service** that serves both the Vite build and the `/co
    - **Language:** Node
    - **Build Command:**
      ```
-     npx --yes pnpm@latest install --frozen-lockfile && npx --yes pnpm@latest build
+     npx --yes pnpm@latest install --frozen-lockfile --config.dangerously-allow-all-builds=true && npx --yes pnpm@latest build
      ```
    - **Start Command:** `npx --yes pnpm@latest start`
    - **Instance Type:** Free
@@ -118,6 +118,8 @@ Under the hood:
 - `VITE_COPILOTKIT_RUNTIME_URL=/copilotkit` makes the Vite build emit a same-origin runtime URL.
 
 Why `npx pnpm` instead of `npm install -g pnpm`: Render's `/usr/lib/node_modules` is read-only, so the `-g` install fails with EROFS. `npx` caches pnpm under the writable home dir, no globals needed.
+
+Why `--config.dangerously-allow-all-builds=true`: pnpm 11 requires explicit approval before running postinstall scripts for new packages (`@scarf/scarf`, `esbuild`) and exits non-zero with `ERR_PNPM_IGNORED_BUILDS` otherwise. The flag pre-approves them in CI where there's no human to prompt.
 
 Free-tier caveat: the service spins down after ~15 minutes of no traffic; the next request takes ~30s to wake it up.
 
