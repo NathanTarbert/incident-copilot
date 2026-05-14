@@ -95,16 +95,29 @@ The backend port (`4000`) and the frontend's `runtimeUrl` are matched in `server
 
 ## Deploy to Render
 
-The repo includes a `render.yaml` blueprint that runs both the Vite build and the Express runtime as a single web service.
+Deploys as **one Node web service** that serves both the Vite build and the `/copilotkit` runtime on the same origin — no CORS, no second deploy pipeline. The free tier works (no credit card required).
 
-1. Push the repo to GitHub (you already did).
-2. In Render: **New → Blueprint**, point at this repo. Render reads `render.yaml`, provisions a Node service, and asks you to paste your `OPENAI_API_KEY`.
-3. After the first build the app is live at `https://<service-name>.onrender.com`. The frontend talks to `/copilotkit` on the same origin — no extra config needed.
+1. Render dashboard → **New +** → **Web Service** → connect this GitHub repo → branch `main`.
+2. **Settings:**
+   - **Language:** Node
+   - **Build Command:**
+     ```
+     npm install -g pnpm && pnpm install --frozen-lockfile && pnpm build
+     ```
+   - **Start Command:** `pnpm start`
+   - **Instance Type:** Free
+3. **Environment variables** (Advanced):
+   - `NODE_ENV` = `production`
+   - `VITE_COPILOTKIT_RUNTIME_URL` = `/copilotkit`
+   - `OPENAI_API_KEY` = *your key*
+4. **Create Web Service** — first build is ~3–5 minutes; live at `https://<your-service>.onrender.com`.
 
 Under the hood:
 - `pnpm build` produces `dist/`.
 - `pnpm start` (= `NODE_ENV=production node server.js`) binds to Render's `$PORT`, serves `dist/` as static, mounts `/copilotkit`, and falls back to `index.html` for client-side routes.
-- `VITE_COPILOTKIT_RUNTIME_URL=/copilotkit` is set in `render.yaml` so the Vite build emits a same-origin runtime URL.
+- `VITE_COPILOTKIT_RUNTIME_URL=/copilotkit` makes the Vite build emit a same-origin runtime URL.
+
+Free-tier caveat: the service spins down after ~15 minutes of no traffic; the next request takes ~30s to wake it up.
 
 To run a production build locally:
 ```bash
