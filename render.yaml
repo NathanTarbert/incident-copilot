@@ -1,0 +1,18 @@
+# Render Blueprint — deploys incident-copilot as a single web service.
+# After connecting the repo in Render, the dashboard reads this file and
+# provisions the service automatically. You'll be prompted for OPENAI_API_KEY.
+services:
+  - type: web
+    name: incident-copilot
+    runtime: node
+    plan: starter
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_COPILOTKIT_RUNTIME_URL
+        value: /copilotkit
+      - key: OPENAI_API_KEY
+        sync: false
