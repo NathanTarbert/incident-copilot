@@ -1,5 +1,7 @@
 # incident-copilot
 
+<img width="1548" height="1306" alt="image" src="https://github.com/user-attachments/assets/9c4da9b3-d192-4540-b55b-d5821f91b0d8" />
+
 AI-powered incident-response dashboard built with **CopilotKit** + **OpenAI**. Triage cybersecurity incidents conversationally, fill report forms via human-in-the-loop chat, drill into per-incident analysis and cross-incident timelines, and view charts over a decade of global cybersecurity threats (2015–2024).
 
 ## Stack
